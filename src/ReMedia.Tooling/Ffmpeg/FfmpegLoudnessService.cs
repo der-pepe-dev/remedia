@@ -76,7 +76,9 @@ public sealed class FfmpegLoudnessService : ILoudnessService
         decimal recommendedGain = rawGain;
         if (ceilingEnforced)
         {
-            decimal ceilingGain = Round(truePeakCeilingDbtp - current.TruePeakDbtp!.Value);
+            // Floor (not round) the headroom to 0.1 dB so the recommended gain never rounds
+            // upward past the ceiling — the API/CLI promises true peak stays <= the ceiling.
+            decimal ceilingGain = FloorToTenth(truePeakCeilingDbtp - current.TruePeakDbtp!.Value);
             recommendedGain = Math.Min(rawGain, ceilingGain);
         }
 
@@ -111,5 +113,10 @@ public sealed class FfmpegLoudnessService : ILoudnessService
     private static decimal Round(decimal value)
     {
         return Math.Round(value, 1, MidpointRounding.AwayFromZero);
+    }
+
+    private static decimal FloorToTenth(decimal value)
+    {
+        return Math.Floor(value * 10m) / 10m;
     }
 }

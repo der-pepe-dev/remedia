@@ -82,6 +82,20 @@ public sealed class LoudnessMatchTests
     }
 
     [Fact]
+    public void MatchToTarget_SubDecimalTruePeak_StaysAtOrBelowCeiling()
+    {
+        // headroom = -1.0 - (-1.45) = 0.45 dB; must floor to 0.4, not round up to 0.5,
+        // so the predicted true peak (-1.45 + 0.4 = -1.05) stays at or below the ceiling.
+        LoudnessAnalysisResult loudness = new(-10m, 6m, -1.45m, -1.45m);
+
+        LoudnessMatchResult result = _service.MatchToTarget(loudness, 0m, -1m);
+
+        Assert.Equal(0.4m, result.RecommendedGainDb);
+        Assert.True(result.GainLimitedByCeiling);
+        Assert.True(result.Clipping!.PredictedTruePeakDbtp <= -1m);
+    }
+
+    [Fact]
     public void MatchToTarget_RoundsGainToTenthOfDb()
     {
         LoudnessAnalysisResult loudness = new(-23.33m, 8m, -12m, -12m);
