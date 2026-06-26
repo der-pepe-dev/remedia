@@ -19,8 +19,9 @@ Status markers: `[done]` implemented in code, `[partial]` partly implemented,
 - [done] Begin subtitle/chapter retime groundwork
 
 ## Later
-- [partial] Destination loudness matching — measurement (EBU R128) done; auto gain-to-target
-  workflow not wired
+- [partial] Destination loudness matching — measurement (EBU R128), clipping prediction, and
+  gain-to-target recommendation done (`MatchToTarget`, CLI `loudness --target-lufs`);
+  auto-applying the recommended gain inside an export is the remaining follow-up
 - [done] Clipping warnings and safety thresholds
 - [done] Subtitle cleanup and normalization
 - [todo] Chapter editing (retiming done; interactive editing not started)
