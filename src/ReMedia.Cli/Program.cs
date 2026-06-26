@@ -379,12 +379,18 @@ static int HandleSubtitleCleanup(string[] args)
     }
 
     string ext = Path.GetExtension(inputPath).ToLowerInvariant();
+    IReadOnlyList<string> parseWarnings;
     IReadOnlyList<SubtitleCue> cues = ext switch
     {
-        ".vtt" => VttParser.ParseFile(inputPath),
-        ".srt" => SrtParser.ParseFile(inputPath),
+        ".vtt" => VttParser.ParseFile(inputPath, out parseWarnings),
+        ".srt" => SrtParser.ParseFile(inputPath, out parseWarnings),
         _ => throw new NotSupportedException($"Unsupported subtitle format: {ext}")
     };
+
+    foreach (string warning in parseWarnings)
+    {
+        Console.Error.WriteLine($"Warning: {warning}");
+    }
 
     Console.WriteLine($"Loaded {cues.Count} cue(s) from {inputPath}");
 

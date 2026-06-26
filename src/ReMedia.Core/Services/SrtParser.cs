@@ -91,8 +91,14 @@ public static class SrtParser
 
     public static IReadOnlyList<SubtitleCue> ParseFile(string filePath)
     {
+        return ParseFile(filePath, out _);
+    }
+
+    /// <summary>Parses a SubRip file, also reporting cues dropped due to bad timing lines.</summary>
+    public static IReadOnlyList<SubtitleCue> ParseFile(string filePath, out IReadOnlyList<string> warnings)
+    {
         string content = File.ReadAllText(filePath, Encoding.UTF8);
-        return Parse(content);
+        return Parse(content, out warnings);
     }
 
     private static bool TryParseTimingLine(string line, out TimeSpan start, out TimeSpan end)

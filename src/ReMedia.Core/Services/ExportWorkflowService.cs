@@ -331,8 +331,13 @@ public sealed class ExportWorkflowService
             try
             {
                 IReadOnlyList<SubtitleCue> cues = ext == ".vtt"
-                    ? VttParser.ParseFile(opt.OutputPath)
-                    : SrtParser.ParseFile(opt.OutputPath);
+                    ? VttParser.ParseFile(opt.OutputPath, out IReadOnlyList<string> parseWarnings)
+                    : SrtParser.ParseFile(opt.OutputPath, out parseWarnings);
+
+                foreach (string warning in parseWarnings)
+                {
+                    _logger?.LogMessage($"Subtitle warning (stream {opt.StreamIndex}): {warning}");
+                }
 
                 IReadOnlyList<SubtitleCue> retimed = SubtitleRetimingService.Retime(cues, stretchFactor);
 
