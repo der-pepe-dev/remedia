@@ -19,9 +19,10 @@ Status markers: `[done]` implemented in code, `[partial]` partly implemented,
 - [done] Begin subtitle/chapter retime groundwork
 
 ## Later
-- [partial] Destination loudness matching — measurement (EBU R128), clipping prediction, and
-  gain-to-target recommendation done (`MatchToTarget`, CLI `loudness --target-lufs`);
-  auto-applying the recommended gain inside an export is the remaining follow-up
+- [done] Destination loudness matching — measurement (EBU R128), clipping prediction,
+  gain-to-target recommendation (`MatchToTarget`, CLI `loudness --target-lufs`), and
+  auto-apply on export (`export --target-lufs` measures each audio track and re-encodes
+  with the ceiling-limited gain). Remaining: WPF App surface + multi-part sources (todo)
 - [done] Clipping warnings and safety thresholds
 - [done] Subtitle cleanup and normalization
 - [todo] Chapter editing (retiming done; interactive editing not started)

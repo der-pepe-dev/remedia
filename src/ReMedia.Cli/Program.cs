@@ -51,7 +51,7 @@ try
             return await HandleAnalyzeAsync(args, probeService, timingAnalysisService);
 
         case "export":
-            return await HandleExportAsync(args, probeService, timingAnalysisService, exportWorkflow);
+            return await HandleExportAsync(args, probeService, timingAnalysisService, loudnessService, exportWorkflow);
 
         case "loudness":
             return await HandleLoudnessAsync(args, probeService, loudnessService);
@@ -141,6 +141,7 @@ static async Task<int> HandleExportAsync(
     string[] args,
     IMediaProbeService probeService,
     ITimingAnalysisService timingAnalysisService,
+    ILoudnessService loudnessService,
     ExportWorkflowService exportWorkflow)
 {
     if (args.Length < 2)
@@ -164,7 +165,9 @@ static async Task<int> HandleExportAsync(
 
     string? codecOverride = CliArguments.ReadString(args, "--codec");
     if (!TryReadOptionalDecimal(args, "--source-fps", out decimal? sourceFpsOverride) ||
-        !TryReadOptionalDecimal(args, "--target-fps", out decimal? targetFps))
+        !TryReadOptionalDecimal(args, "--target-fps", out decimal? targetFps) ||
+        !TryReadOptionalDecimal(args, "--target-lufs", out decimal? targetLufs) ||
+        !TryReadOptionalDecimal(args, "--ceiling", out decimal? ceilingDbtp))
     {
         return 1;
     }
@@ -225,6 +228,32 @@ static async Task<int> HandleExportAsync(
         streamsToExport = requested;
     }
 
+    decimal ceiling = ceilingDbtp ?? -1.0m;
+    Dictionary<int, decimal> loudnessGains = [];
+    if (targetLufs.HasValue)
+    {
+        if (additionalParts.Count > 0)
+        {
+            Console.Error.WriteLine("Warning: --target-lufs is not supported for multi-part sources; skipping loudness matching.");
+        }
+        else
+        {
+            foreach (MediaStreamInfo s in streamsToExport.Where(s => s.AssetType == MediaAssetType.Audio))
+            {
+                Console.WriteLine($"Measuring loudness for stream {s.Index} (target {targetLufs.Value:0.#} LUFS)...");
+                LoudnessAnalysisResult measured = await loudnessService.AnalyzeAsync(inputPath, s.Index);
+                LoudnessMatchResult match = loudnessService.MatchToTarget(measured, targetLufs.Value, ceiling);
+                CliPrinter.PrintLoudnessMatch(match);
+                if (match.RecommendedGainDb is decimal g && g != 0m)
+                {
+                    loudnessGains[s.Index] = g;
+                }
+            }
+
+            Console.WriteLine();
+        }
+    }
+
     decimal? sourceFps = sourceFpsOverride;
     if (!sourceFps.HasValue)
     {
@@ -257,6 +286,17 @@ static async Task<int> HandleExportAsync(
                 copyStream = false;
             }
 
+            decimal? appliedGain = s.AssetType == MediaAssetType.Audio && loudnessGains.TryGetValue(s.Index, out decimal g)
+                ? g
+                : null;
+
+            if (appliedGain.HasValue && copyStream)
+            {
+                Console.Error.WriteLine($"Warning: stream {s.Index} uses codec copy but loudness gain requires re-encoding. Falling back to flac.");
+                outputCodec = "flac";
+                copyStream = false;
+            }
+
             string container = copyStream
                 ? ContainerDefaults.GetDefaultContainer(s.AssetType, s.CodecName)
                 : ContainerDefaults.GetDefaultContainer(s.AssetType, outputCodec);
@@ -267,7 +307,8 @@ static async Task<int> HandleExportAsync(
                 s.CodecName,
                 outputCodec,
                 container,
-                copyStream);
+                copyStream,
+                AppliedGainDb: appliedGain);
         })
         .ToList();
 
