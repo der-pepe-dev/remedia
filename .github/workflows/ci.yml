@@ -26,3 +26,27 @@ jobs:
 
       - name: Test
         run: dotnet test ReMedia.sln --configuration Release --no-build
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # The whole solution (including the WPF App, via EnableWindowsTargeting) builds on
+      # Linux. Tests use xunit.v3 / Microsoft.Testing.Platform, which `dotnet test` does
+      # not discover here, so run the built test executables directly.
+      - name: Build
+        run: dotnet build ReMedia.sln --configuration Release
+
+      - name: Test (Core)
+        run: dotnet tests/ReMedia.Core.Tests/bin/Release/net10.0/ReMedia.Core.Tests.dll
+
+      - name: Test (Tooling)
+        run: dotnet tests/ReMedia.Tooling.Tests/bin/Release/net10.0/ReMedia.Tooling.Tests.dll
