@@ -6,19 +6,40 @@ Prefer appending dated notes over rewriting._
 
 ## Status
 
-Early phased development. Phase 0 (probe + same-format track/chapter export) is the
-active scope; Phase 1 (FPS-aware conversion, audio codec/container conversion,
-retimed export) is next. Backend currently shells out to ffprobe/ffmpeg; a native
-probe backend is a later option. See [[phases]].
+Phase 0 and Phase 1 are substantially implemented, and several "Later" features already
+exist in code. The backend shells out to ffprobe/ffmpeg (`ReMedia.Tooling`). See [[phases]].
 
-## Known limitations
+Implemented today (verified in source / CLI commands):
 
-- No FPS-aware timing conversion yet (Phase 1).
-- Loudness matching, clipping prediction, subtitle/chapter retiming, and muxing are
-  later phases.
-- Native probe backend not implemented (ffprobe-based today).
+- Probe via ffprobe + a native header-magic `ContainerFormatDetector` (CLI: `probe`, `detect`).
+- FPS-aware timing analysis — source/target FPS, stretch/tempo factors
+  (`TimingAnalysisService`, CLI: `analyze`).
+- Track export (per-stream), chapter export to ffmetadata, and muxing to MKV
+  (`FfmpegTrackExportService`, `FfmpegChapterExportService`, `FfmpegMuxService`,
+  orchestrated by `ExportWorkflowService`; CLI: `export`).
+- Audio codec/container conversion, gain, and sync-offset; multi-part concat source.
+- Loudness measurement (EBU R128) + clipping prediction
+  (`FfmpegLoudnessService`, `Ebur128OutputParser`; CLI: `loudness`).
+- Subtitle parse/write (SRT + VTT), retiming, cleanup, and segment-based retiming
+  (`SrtParser`/`VttParser`/writers, `SubtitleRetimingService`, `SubtitleCleanupService`,
+  `SegmentedRetimingService`; CLI: `cleanup`). Chapter retiming via `ChapterRetimingService`.
+- Codec/container reference data (`CodecCatalog`, `ContainerDefaults`, `FpsPresets`;
+  CLI: `list-codecs`).
+
+## Known limitations / not done
+
+- WPF App (`ReMedia.App`) is a thin shell; no automated tests over its ViewModels.
+- Native probe backend covers container-format detection only; full native stream/chapter
+  parsing still delegates to ffprobe.
+- Loudness *matching* (auto gain to a target) beyond measurement + clipping prediction
+  is not wired as an automated workflow.
 
 ## Recent notes
 
 <!-- Append dated notes here, newest first: -->
+- 2026-06-27: Synced status/phases docs with actual code — Phase 0/1 and several "Later"
+  features (loudness+clipping, mux, subtitle/chapter/segment retiming, subtitle cleanup,
+  native format detection) are implemented. Docs previously listed these as not started.
+- 2026-06-27: Full `dotnet build ReMedia.sln` now works on WSL/Linux
+  (`EnableWindowsTargeting` on the WPF App); whole solution builds with 0 warnings.
 <!-- - YYYY-MM-DD: ... -->
