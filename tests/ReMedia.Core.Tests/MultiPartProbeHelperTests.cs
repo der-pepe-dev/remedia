@@ -18,7 +18,7 @@ public sealed class MultiPartProbeHelperTests
             ]),
         ]);
 
-        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["part1.mkv"]);
+        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["part1.mkv"], TestContext.Current.CancellationToken);
 
         Assert.Equal(TimeSpan.FromMinutes(60), result.Combined.Duration);
         Assert.Equal(2, result.Combined.Chapters.Count);
@@ -35,7 +35,7 @@ public sealed class MultiPartProbeHelperTests
             CreateProbeResult("part2.mkv", TimeSpan.FromMinutes(45), []),
         ]);
 
-        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["part1.mkv", "part2.mkv"]);
+        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["part1.mkv", "part2.mkv"], TestContext.Current.CancellationToken);
 
         Assert.Equal(TimeSpan.FromMinutes(105), result.Combined.Duration);
         Assert.Equal(2, result.PartDurations.Count);
@@ -58,7 +58,7 @@ public sealed class MultiPartProbeHelperTests
             ]),
         ]);
 
-        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["part1.mkv", "part2.mkv"]);
+        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["part1.mkv", "part2.mkv"], TestContext.Current.CancellationToken);
 
         Assert.Equal(4, result.Combined.Chapters.Count);
 
@@ -93,7 +93,7 @@ public sealed class MultiPartProbeHelperTests
         ]);
 
         MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(
-            probe, ["p1.mkv", "p2.mkv", "p3.mkv"]);
+            probe, ["p1.mkv", "p2.mkv", "p3.mkv"], TestContext.Current.CancellationToken);
 
         Assert.Equal(TimeSpan.FromMinutes(60), result.Combined.Duration);
         Assert.Equal(3, result.Combined.Chapters.Count);
@@ -114,7 +114,7 @@ public sealed class MultiPartProbeHelperTests
                 [new(0, TimeSpan.Zero, TimeSpan.FromMinutes(30), "B")]),
         ]);
 
-        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["p1.mkv", "p2.mkv"]);
+        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["p1.mkv", "p2.mkv"], TestContext.Current.CancellationToken);
 
         Assert.Equal(0, result.Combined.Chapters[0].Id);
         Assert.Equal(1, result.Combined.Chapters[1].Id);
@@ -130,7 +130,7 @@ public sealed class MultiPartProbeHelperTests
             CreateProbeResult("p2.mkv", TimeSpan.FromMinutes(40), []),
         ]);
 
-        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["p1.mkv", "p2.mkv"]);
+        MultiPartProbeResult result = await MultiPartProbeHelper.ProbeAllAsync(probe, ["p1.mkv", "p2.mkv"], TestContext.Current.CancellationToken);
 
         Assert.Equal(TimeSpan.FromMinutes(100), result.Combined.Duration);
         Assert.Single(result.Combined.Chapters);
@@ -164,7 +164,7 @@ public sealed class MultiPartProbeHelperTests
         FakeProbeService probe = new([]);
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
-            MultiPartProbeHelper.ProbeAllAsync(probe, []));
+            MultiPartProbeHelper.ProbeAllAsync(probe, [], TestContext.Current.CancellationToken));
     }
 
     private static MediaProbeResult CreateProbeResult(

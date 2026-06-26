@@ -66,7 +66,7 @@ public sealed class FfprobeMediaProbeServiceTests
         FakeProcessRunner runner = new(SampleFfprobeJson);
         FfprobeMediaProbeService service = new(new ExternalToolPaths("ffprobe", "ffmpeg"), runner);
 
-        MediaProbeResult result = await service.ProbeAsync("movie.mkv");
+        MediaProbeResult result = await service.ProbeAsync("movie.mkv", TestContext.Current.CancellationToken);
 
         Assert.Equal("matroska,webm", result.FormatName);
         Assert.Equal("Matroska / WebM", result.FormatLongName);
@@ -80,7 +80,7 @@ public sealed class FfprobeMediaProbeServiceTests
         FakeProcessRunner runner = new(SampleFfprobeJson);
         FfprobeMediaProbeService service = new(new ExternalToolPaths("ffprobe", "ffmpeg"), runner);
 
-        MediaProbeResult result = await service.ProbeAsync("movie.mkv");
+        MediaProbeResult result = await service.ProbeAsync("movie.mkv", TestContext.Current.CancellationToken);
 
         MediaStreamInfo video = result.Streams[0];
         Assert.Equal(MediaAssetType.Video, video.AssetType);
@@ -98,7 +98,7 @@ public sealed class FfprobeMediaProbeServiceTests
         FakeProcessRunner runner = new(SampleFfprobeJson);
         FfprobeMediaProbeService service = new(new ExternalToolPaths("ffprobe", "ffmpeg"), runner);
 
-        MediaProbeResult result = await service.ProbeAsync("movie.mkv");
+        MediaProbeResult result = await service.ProbeAsync("movie.mkv", TestContext.Current.CancellationToken);
 
         MediaStreamInfo audio = result.Streams[1];
         Assert.Equal(MediaAssetType.Audio, audio.AssetType);
@@ -115,7 +115,7 @@ public sealed class FfprobeMediaProbeServiceTests
         FakeProcessRunner runner = new(SampleFfprobeJson);
         FfprobeMediaProbeService service = new(new ExternalToolPaths("ffprobe", "ffmpeg"), runner);
 
-        MediaProbeResult result = await service.ProbeAsync("movie.mkv");
+        MediaProbeResult result = await service.ProbeAsync("movie.mkv", TestContext.Current.CancellationToken);
 
         MediaStreamInfo subtitle = result.Streams[2];
         Assert.Equal(MediaAssetType.Subtitle, subtitle.AssetType);
@@ -129,7 +129,7 @@ public sealed class FfprobeMediaProbeServiceTests
         FakeProcessRunner runner = new(SampleFfprobeJson);
         FfprobeMediaProbeService service = new(new ExternalToolPaths("ffprobe", "ffmpeg"), runner);
 
-        MediaProbeResult result = await service.ProbeAsync("movie.mkv");
+        MediaProbeResult result = await service.ProbeAsync("movie.mkv", TestContext.Current.CancellationToken);
 
         Assert.Equal(2, result.Chapters.Count);
         Assert.Equal("Chapter 1", result.Chapters[0].Title);
@@ -144,7 +144,7 @@ public sealed class FfprobeMediaProbeServiceTests
         FakeProcessRunner runner = new(json);
         FfprobeMediaProbeService service = new(new ExternalToolPaths("ffprobe", "ffmpeg"), runner);
 
-        MediaProbeResult result = await service.ProbeAsync("silence.wav");
+        MediaProbeResult result = await service.ProbeAsync("silence.wav", TestContext.Current.CancellationToken);
 
         Assert.Empty(result.Streams);
         Assert.Empty(result.Chapters);
@@ -159,7 +159,7 @@ public sealed class FfprobeMediaProbeServiceTests
         FakeProcessRunner runner = new("{}");
         FfprobeMediaProbeService service = new(new ExternalToolPaths("ffprobe", "ffmpeg"), runner);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.ProbeAsync(inputPath!));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.ProbeAsync(inputPath!, TestContext.Current.CancellationToken));
     }
 
     private sealed class FakeProcessRunner : IProcessRunner
