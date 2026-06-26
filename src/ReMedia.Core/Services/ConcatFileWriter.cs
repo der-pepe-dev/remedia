@@ -21,6 +21,9 @@ public static class ConcatFileWriter
         StringBuilder sb = new();
         foreach (string path in filePaths)
         {
+            // Inside the concat demuxer's single quotes, backslash is literal (Windows
+            // paths are safe as-is); only a single quote is special, escaped as the
+            // standard close/escape/reopen sequence.
             string escaped = path.Replace("'", "'\\''");
             sb.AppendLine($"file '{escaped}'");
         }

@@ -20,9 +20,9 @@ public static class FfmetadataWriter
             sb.AppendLine("[CHAPTER]");
             sb.AppendLine("TIMEBASE=1/1000");
             sb.Append("START=");
-            sb.AppendLine(((long)chapter.Start.TotalMilliseconds).ToString(CultureInfo.InvariantCulture));
+            sb.AppendLine(ToMillis(chapter.Start).ToString(CultureInfo.InvariantCulture));
             sb.Append("END=");
-            sb.AppendLine(((long)chapter.End.TotalMilliseconds).ToString(CultureInfo.InvariantCulture));
+            sb.AppendLine(ToMillis(chapter.End).ToString(CultureInfo.InvariantCulture));
 
             if (!string.IsNullOrEmpty(chapter.Title))
             {
@@ -41,6 +41,11 @@ public static class FfmetadataWriter
     {
         string content = WriteChapters(chapters);
         await File.WriteAllTextAsync(outputPath, content, Encoding.UTF8, cancellationToken);
+    }
+
+    private static long ToMillis(TimeSpan time)
+    {
+        return (long)Math.Round(time.TotalMilliseconds, MidpointRounding.AwayFromZero);
     }
 
     private static string EscapeMetadataValue(string value)

@@ -13,11 +13,11 @@ public sealed class RationalTests
     }
 
     [Fact]
-    public void ParseOrZero_WithZeroDenominator_DefaultsToOne()
+    public void ParseOrZero_WithZeroDenominator_ReturnsZero()
     {
+        // A zero denominator is not a valid rate; never silently rewrite it.
         Rational result = Rational.ParseOrZero("25/0");
-        Assert.Equal(25, result.Numerator);
-        Assert.Equal(1, result.Denominator);
+        Assert.Equal(Rational.Zero, result);
     }
 
     [Theory]
@@ -34,6 +34,7 @@ public sealed class RationalTests
     [InlineData("not/valid")]
     [InlineData("25")]
     [InlineData("25/a/b")]
+    [InlineData("2//3")]
     public void ParseOrZero_WithMalformed_ReturnsZero(string value)
     {
         Rational result = Rational.ParseOrZero(value);

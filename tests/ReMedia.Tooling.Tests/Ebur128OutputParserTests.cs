@@ -84,6 +84,19 @@ public sealed class Ebur128OutputParserTests
     }
 
     [Fact]
+    public void Parse_WithNonNumericValue_ReturnsNull()
+    {
+        string malformed = """
+            Integrated loudness:
+              I:         n/a LUFS
+            """;
+
+        LoudnessAnalysisResult result = Ebur128OutputParser.Parse(malformed);
+
+        Assert.Null(result.IntegratedLufs);
+    }
+
+    [Fact]
     public void Parse_WithPositivePeak_ParsesCorrectly()
     {
         string loud = """

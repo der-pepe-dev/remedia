@@ -104,4 +104,43 @@ public sealed class VttParserTests
         Assert.Single(cues);
         Assert.Equal("Hello", cues[0].Text);
     }
+
+    [Theory]
+    [InlineData("00:00:01.5", 1, 500)]
+    [InlineData("00:00:01.50", 1, 500)]
+    [InlineData("00:00:01.500", 1, 500)]
+    [InlineData("00:00:01.05", 1, 50)]
+    public void Parse_FractionalSeconds_ScaledToMilliseconds(string startStamp, int expectSeconds, int expectMs)
+    {
+        string input = $"WEBVTT\n\n{startStamp} --> 00:00:09.000\nHi\n";
+
+        IReadOnlyList<SubtitleCue> cues = VttParser.Parse(input);
+
+        Assert.Single(cues);
+        Assert.Equal(new TimeSpan(0, 0, 0, expectSeconds, expectMs), cues[0].Start);
+    }
+
+    [Fact]
+    public void Parse_TooManyFractionalDigits_DropsCueAndWarns()
+    {
+        // ".5000" has 4 fractional digits — rejected rather than silently mis-scaled.
+        string input = "WEBVTT\n\n00:00:01.5000 --> 00:00:02.000\nBad\n";
+
+        IReadOnlyList<SubtitleCue> cues = VttParser.Parse(input, out IReadOnlyList<string> warnings);
+
+        Assert.Empty(cues);
+        Assert.NotEmpty(warnings);
+    }
+
+    [Fact]
+    public void Parse_UnparseableTimingLine_ReportsWarningAndKeepsValidCue()
+    {
+        string input = "WEBVTT\n\n00:00:0x.000 --> 00:00:02.000\nBad\n\n00:00:03.000 --> 00:00:04.000\nGood\n";
+
+        IReadOnlyList<SubtitleCue> cues = VttParser.Parse(input, out IReadOnlyList<string> warnings);
+
+        Assert.Single(cues);
+        Assert.Equal("Good", cues[0].Text);
+        Assert.NotEmpty(warnings);
+    }
 }

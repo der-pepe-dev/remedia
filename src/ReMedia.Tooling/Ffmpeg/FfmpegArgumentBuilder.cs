@@ -191,6 +191,9 @@ public static class FfmpegArgumentBuilder
 
     private static string Quote(string value)
     {
-        return $"\"{value}\"";
+        // Escape any embedded double quote so values like a stream title containing a
+        // quote can't terminate the argument early. (File paths can't contain '"' on
+        // Windows, but metadata titles can.)
+        return $"\"{value.Replace("\"", "\\\"")}\"";
     }
 }

@@ -84,10 +84,29 @@ static async Task<int> HandleProbeAsync(string[] args, IMediaProbeService probeS
     return 0;
 }
 
+// Reads an optional decimal flag, but errors instead of silently defaulting when the
+// flag is present with a missing or unparseable value (per "never hide warnings").
+static bool TryReadOptionalDecimal(string[] args, string name, out decimal? value)
+{
+    value = CliArguments.ReadDecimal(args, name);
+    if (value is null && CliArguments.HasFlag(args, name))
+    {
+        Console.Error.WriteLine($"Invalid or missing value for {name}.");
+        return false;
+    }
+
+    return true;
+}
+
 static async Task<int> HandleAnalyzeAsync(string[] args, IMediaProbeService probeService, ITimingAnalysisService timingAnalysisService)
 {
-    decimal? sourceFps = CliArguments.ReadDecimal(args, "--source-fps");
-    decimal targetFps = CliArguments.ReadDecimal(args, "--target-fps") ?? 24000m / 1001m;
+    if (!TryReadOptionalDecimal(args, "--source-fps", out decimal? sourceFps) ||
+        !TryReadOptionalDecimal(args, "--target-fps", out decimal? targetFpsOverride))
+    {
+        return 1;
+    }
+
+    decimal targetFps = targetFpsOverride ?? 24000m / 1001m;
     TimeSpan? duration = CliArguments.ReadTimeSpan(args, "--duration");
 
     if (args.Length >= 2 && !args[1].StartsWith("--"))
@@ -137,10 +156,18 @@ static async Task<int> HandleExportAsync(
     bool muxToMkv = args.Any(a => string.Equals(a, "--mux", StringComparison.OrdinalIgnoreCase));
     string? destinationMaster = CliArguments.ReadString(args, "--destination");
     List<string> additionalParts = CliArguments.ReadManyStrings(args, "--part");
-    List<int> streamIndexes = CliArguments.ReadManyIntegers(args, "--stream");
+    if (!CliArguments.TryReadManyIntegers(args, "--stream", out List<int> streamIndexes))
+    {
+        Console.Error.WriteLine("Invalid or missing value for --stream (expected an integer index).");
+        return 1;
+    }
+
     string? codecOverride = CliArguments.ReadString(args, "--codec");
-    decimal? sourceFpsOverride = CliArguments.ReadDecimal(args, "--source-fps");
-    decimal? targetFps = CliArguments.ReadDecimal(args, "--target-fps");
+    if (!TryReadOptionalDecimal(args, "--source-fps", out decimal? sourceFpsOverride) ||
+        !TryReadOptionalDecimal(args, "--target-fps", out decimal? targetFps))
+    {
+        return 1;
+    }
 
     if (!exportAll && streamIndexes.Count == 0 && !exportChapters)
     {

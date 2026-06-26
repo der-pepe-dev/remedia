@@ -90,8 +90,9 @@ public sealed class FfmetadataWriterTests
     }
 
     [Fact]
-    public void WriteChapters_WithFractionalMilliseconds_TruncatesToWholeMs()
+    public void WriteChapters_WithFractionalMilliseconds_RoundsToNearestMs()
     {
+        // 0.5001 ms rounds up to 1 ms; 1000.5001 ms rounds up to 1001 ms.
         List<MediaChapterInfo> chapters =
         [
             new(0, TimeSpan.FromTicks(5001), TimeSpan.FromTicks(TimeSpan.TicksPerSecond + 5001), null),
@@ -99,7 +100,7 @@ public sealed class FfmetadataWriterTests
 
         string output = FfmetadataWriter.WriteChapters(chapters);
 
-        Assert.Contains("START=0", output);
-        Assert.Contains("END=1000", output);
+        Assert.Contains("START=1", output);
+        Assert.Contains("END=1001", output);
     }
 }

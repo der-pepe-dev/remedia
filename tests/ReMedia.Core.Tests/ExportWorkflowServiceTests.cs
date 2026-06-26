@@ -296,6 +296,90 @@ public sealed class ExportWorkflowServiceTests
         Assert.DoesNotContain("retimed", result.ChapterResult.OperationName);
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WithMux_MapsAssetTypesToMatchingSelections()
+    {
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        Directory.CreateDirectory(outputFolder);
+
+        WritingTrackExportService trackExport = new();
+        FakeChapterExportService chapterExport = new();
+        CapturingMuxService muxService = new();
+        ExportWorkflowService service = new(trackExport, chapterExport, muxService: muxService);
+
+        ExportWorkflowRequest request = new(
+            InputPath: @"C:\in\movie.mkv",
+            OutputFolder: outputFolder,
+            Tracks:
+            [
+                new ExportTrackSelection(1, MediaAssetType.Audio, "ac3", "copy", ".ac3", CopyStream: true),
+                new ExportTrackSelection(2, MediaAssetType.Subtitle, "srt", "copy", ".srt", CopyStream: true),
+            ],
+            ExportChapters: false,
+            Chapters: [],
+            MuxToMkv: true);
+
+        await service.ExecuteAsync(request);
+
+        try
+        {
+            Assert.NotNull(muxService.LastRequest);
+            Assert.Equal(2, muxService.LastRequest!.Assets.Count);
+            MuxInputAsset audio = muxService.LastRequest.Assets.Single(a => a.FilePath.EndsWith(".ac3", StringComparison.Ordinal));
+            MuxInputAsset subtitle = muxService.LastRequest.Assets.Single(a => a.FilePath.EndsWith(".srt", StringComparison.Ordinal));
+            Assert.Equal(MediaAssetType.Audio, audio.AssetType);
+            Assert.Equal(MediaAssetType.Subtitle, subtitle.AssetType);
+        }
+        finally
+        {
+            Directory.Delete(outputFolder, recursive: true);
+        }
+    }
+
+    private sealed class WritingTrackExportService : ITrackExportService
+    {
+        public Task<IReadOnlyList<ToolOperationResult>> ExportAsync(
+            string inputPath,
+            IReadOnlyCollection<TrackExportOptions> tracks,
+            CancellationToken cancellationToken = default,
+            bool concatDemuxer = false)
+        {
+            List<ToolOperationResult> results = [];
+            foreach (TrackExportOptions t in tracks)
+            {
+                File.WriteAllText(t.OutputPath, "stub");
+                results.Add(new ToolOperationResult(
+                    $"stream {t.StreamIndex}",
+                    t.OutputPath,
+                    $"ffmpeg -i \"{inputPath}\" ...",
+                    Succeeded: true,
+                    ExitCode: 0,
+                    Duration: TimeSpan.FromMilliseconds(10),
+                    ErrorDetail: null));
+            }
+
+            return Task.FromResult<IReadOnlyList<ToolOperationResult>>(results);
+        }
+    }
+
+    private sealed class CapturingMuxService : IMuxService
+    {
+        public MuxRequest? LastRequest { get; private set; }
+
+        public Task<ToolOperationResult> MuxAsync(MuxRequest request, CancellationToken cancellationToken = default)
+        {
+            LastRequest = request;
+            return Task.FromResult(new ToolOperationResult(
+                "mux",
+                request.OutputPath,
+                "ffmpeg mux",
+                Succeeded: true,
+                ExitCode: 0,
+                Duration: TimeSpan.Zero,
+                ErrorDetail: null));
+        }
+    }
+
     private sealed class FakeTrackExportService : ITrackExportService
     {
         private readonly bool _simulateFailure;

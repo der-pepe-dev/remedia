@@ -13,6 +13,18 @@ public static class VttParser
 {
     public static IReadOnlyList<SubtitleCue> Parse(string content)
     {
+        return Parse(content, out _);
+    }
+
+    /// <summary>
+    /// Parses WebVTT content, also reporting cues that were dropped because their timing
+    /// line could not be parsed. Per the domain rule "never hide timing-mismatch warnings".
+    /// </summary>
+    public static IReadOnlyList<SubtitleCue> Parse(string content, out IReadOnlyList<string> warnings)
+    {
+        List<string> warningList = [];
+        warnings = warningList;
+
         if (string.IsNullOrWhiteSpace(content))
         {
             return [];
@@ -64,6 +76,7 @@ public static class VttParser
 
             if (!TryParseTimingLine(currentLine, out TimeSpan start, out TimeSpan end))
             {
+                warningList.Add($"Skipped cue with unparseable timing line: \"{currentLine}\"");
                 i++;
                 continue;
             }
@@ -156,7 +169,7 @@ public static class VttParser
         }
 
         if (!int.TryParse(secParts[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int seconds) ||
-            !int.TryParse(secParts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int milliseconds))
+            !SubtitleTimeParsing.TryParseFractionalMs(secParts[1], out int milliseconds))
         {
             return false;
         }
