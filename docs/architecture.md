@@ -25,6 +25,11 @@ for testing and automation.
 A WPF desktop shell (`net10.0-windows`, `UseWPF`). Stay as thin as possible and reuse
 Core abstractions. No media-processing logic in code-behind.
 
+Planned: this frontend will be replaced by an Avalonia app for cross-platform runtime
+(it currently only builds, not runs, off Windows). Keep the App thin so the swap stays
+contained; do not invest further in WPF-only features. See
+[[decisions/0001-frontend-wpf-to-avalonia]].
+
 ### tests/*
 Unit tests for timing math, planning, codec selection, and command generation.
 
