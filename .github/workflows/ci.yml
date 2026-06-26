@@ -24,8 +24,14 @@ jobs:
       - name: Build
         run: dotnet build ReMedia.sln --configuration Release --no-restore
 
-      - name: Test
-        run: dotnet test ReMedia.sln --configuration Release --no-build
+      # Tests use xunit.v3 / Microsoft.Testing.Platform, which `dotnet test` does not
+      # discover (it reports "No test is available"). Run the built test executables
+      # directly so the tests actually execute (they exit non-zero on failure).
+      - name: Test (Core)
+        run: dotnet tests/ReMedia.Core.Tests/bin/Release/net10.0/ReMedia.Core.Tests.dll
+
+      - name: Test (Tooling)
+        run: dotnet tests/ReMedia.Tooling.Tests/bin/Release/net10.0/ReMedia.Tooling.Tests.dll
 
   build-linux:
     runs-on: ubuntu-latest
