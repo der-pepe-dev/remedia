@@ -19,3 +19,6 @@ correction or hard-won lesson. Newest first.
 - 2026-06-26: The WPF `ReMedia.App` project can't build on WSL/Linux (NETSDK1100,
   Windows-targeted). -> Build/test the non-App projects individually; don't `dotnet build
   ReMedia.sln` on Linux and treat the App failure as a regression.
+  UPDATE 2026-06-27: Fixed by adding `<EnableWindowsTargeting>true</EnableWindowsTargeting>`
+  to `ReMedia.App.csproj`. The full solution now builds on WSL. Caveat: it still cannot
+  *run* on Linux (WPF runtime is Windows-only) — build verification only.
