@@ -4,6 +4,9 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
+    <!-- Allow building (not running) this Windows-targeted WPF app on non-Windows hosts
+         such as WSL/Linux. Restores the Windows reference packs; no-op on Windows. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>
