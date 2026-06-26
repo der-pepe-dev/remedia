@@ -13,11 +13,6 @@ Durable, prioritized task list. Active work goes in `tasks/<task-name>.md`, not 
 - Loudness matching for multi-part sources: `export --target-lufs` currently warns and
   skips when `--part` is used (per-part measurement / concat analysis not wired).
   Frontend-agnostic (lives in CLI/Core).
-- CI: verify the Windows leg actually runs tests. `dotnet test` does not discover the
-  xunit.v3 / Microsoft.Testing.Platform projects locally (reports "No test is available");
-  the Windows job still uses `dotnet test ReMedia.sln`, so it may be a false pass. The new
-  Linux leg runs the built test executables directly instead. Consider switching Windows
-  to the same approach (or enabling MTP `dotnet test` support).
 
 ## Low priority / someday
 
