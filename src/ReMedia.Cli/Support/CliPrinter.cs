@@ -36,6 +36,8 @@ internal static class CliPrinter
         Console.WriteLine("  --codec <name>         Output codec (default: copy)");
         Console.WriteLine("  --source-fps <fps>     Override source FPS (auto-detected from video)");
         Console.WriteLine("  --target-fps <fps>     Target FPS for timing conversion");
+        Console.WriteLine("  --target-lufs <LUFS>   Re-encode audio to reach this loudness (ceiling-limited)");
+        Console.WriteLine("  --ceiling <dBTP>       True-peak ceiling for --target-lufs (default: -1.0)");
         Console.WriteLine("  --output-folder <path> Output directory");
         Console.WriteLine("  --mux                  Combine exported tracks into a single .mkv");
         Console.WriteLine("  --destination <file>   Mux into an existing file (keeps its video + streams)");

@@ -8,10 +8,11 @@ Durable, prioritized task list. Active work goes in `tasks/<task-name>.md`, not 
 
 ## Medium priority
 
-- Loudness matching — auto-apply: the recommendation workflow exists
-  (`ILoudnessService.MatchToTarget`, CLI `loudness --target-lufs`). Follow-up: feed the
-  recommended gain into `ExportWorkflowService` so an export can target a LUFS per track
-  (export already supports `AppliedGainDb`).
+- Loudness matching in the WPF App: CLI `export --target-lufs` auto-applies the
+  recommended gain per audio track; the desktop App does not yet expose this (it would
+  call `ILoudnessService.MatchToTarget` and set `AppliedGainDb` like the CLI does).
+- Loudness matching for multi-part sources: `export --target-lufs` currently warns and
+  skips when `--part` is used (per-part measurement / concat analysis not wired).
 - WPF App test coverage: `ReMedia.App` ViewModels have no automated tests (e.g. the
   `MainWindowViewModel` clipping recalc with a half-populated `LoudnessAnalysisResult`).
 - CI: `.github/workflows/ci.yml` builds only on `windows-latest`; the solution now builds
