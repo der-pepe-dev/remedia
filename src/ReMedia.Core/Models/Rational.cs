@@ -21,7 +21,7 @@ public readonly record struct Rational(int Numerator, int Denominator)
             return Zero;
         }
 
-        string[] parts = value.Split('/', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        string[] parts = value.Split('/', StringSplitOptions.TrimEntries);
         if (parts.Length != 2)
         {
             return Zero;
@@ -32,6 +32,13 @@ public readonly record struct Rational(int Numerator, int Denominator)
             return Zero;
         }
 
-        return new Rational(numerator, denominator == 0 ? 1 : denominator);
+        // A zero denominator is not a valid rate; never silently rewrite it to a
+        // valid-looking value. Return Zero so bad FPS data is caught downstream.
+        if (denominator == 0)
+        {
+            return Zero;
+        }
+
+        return new Rational(numerator, denominator);
     }
 }

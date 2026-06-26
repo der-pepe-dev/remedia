@@ -61,6 +61,10 @@ public sealed class ExportWorkflowService
         IReadOnlyList<ToolOperationResult> trackResults = [];
         ToolOperationResult? chapterResult = null;
 
+        // Kept aligned 1:1 (by index) with trackResults; carries each track's AssetType
+        // so the mux step maps asset types by identity rather than re-deriving an index.
+        List<TrackExportOptions> exportOptions = [];
+
         if (request.Tracks.Count > 0)
         {
             List<TrackExportOptions> options = request.Tracks
@@ -88,6 +92,8 @@ public sealed class ExportWorkflowService
                         AudioSyncOffsetMs: hasSyncOffset ? t.AudioSyncOffsetMs : null);
                 })
                 .ToList();
+
+            exportOptions = options;
 
             int skipped = request.Tracks.Count - options.Count;
             if (skipped > 0)
@@ -186,7 +192,7 @@ public sealed class ExportWorkflowService
         if (request.MuxToMkv && _muxService is not null && !hasFailures)
         {
             ReportProgress("Muxing to MKV");
-            muxResult = await MuxToMkvAsync(request, trackResults, chapterResult, cancellationToken);
+            muxResult = await MuxToMkvAsync(request, trackResults, exportOptions, chapterResult, cancellationToken);
             if (muxResult is not null && !muxResult.Succeeded)
             {
                 hasFailures = true;
@@ -216,14 +222,10 @@ public sealed class ExportWorkflowService
     private async Task<ToolOperationResult?> MuxToMkvAsync(
         ExportWorkflowRequest request,
         IReadOnlyList<ToolOperationResult> trackResults,
+        IReadOnlyList<TrackExportOptions> exportOptions,
         ToolOperationResult? chapterResult,
         CancellationToken cancellationToken)
     {
-        // Build the filtered selection list (same filter as ExecuteAsync) to keep indexes aligned with trackResults
-        List<ExportTrackSelection> filteredSelections = request.Tracks
-            .Where(t => t.AssetType is not MediaAssetType.Video)
-            .ToList();
-
         List<MuxInputAsset> assets = [];
         int inputIdx = request.DestinationMasterPath is not null ? 1 : 0;
 
@@ -240,8 +242,17 @@ public sealed class ExportWorkflowService
                 continue;
             }
 
-            ExportTrackSelection? sel = i < filteredSelections.Count ? filteredSelections[i] : null;
-            MediaAssetType assetType = sel?.AssetType ?? MediaAssetType.Audio;
+            // exportOptions is built 1:1 with trackResults (same filter and order, preserved
+            // through subtitle retiming), so option[i] is this track's selection. If the
+            // counts ever diverge, skip with a warning rather than silently mislabeling.
+            if (i >= exportOptions.Count)
+            {
+                _logger?.LogMessage(
+                    $"Warning: no export option for track result '{tr.OutputPath}' (index {i}); skipping from mux.");
+                continue;
+            }
+
+            MediaAssetType assetType = exportOptions[i].AssetType;
 
             assets.Add(new MuxInputAsset(
                 tr.OutputPath,
@@ -320,8 +331,13 @@ public sealed class ExportWorkflowService
             try
             {
                 IReadOnlyList<SubtitleCue> cues = ext == ".vtt"
-                    ? VttParser.ParseFile(opt.OutputPath)
-                    : SrtParser.ParseFile(opt.OutputPath);
+                    ? VttParser.ParseFile(opt.OutputPath, out IReadOnlyList<string> parseWarnings)
+                    : SrtParser.ParseFile(opt.OutputPath, out parseWarnings);
+
+                foreach (string warning in parseWarnings)
+                {
+                    _logger?.LogMessage($"Subtitle warning (stream {opt.StreamIndex}): {warning}");
+                }
 
                 IReadOnlyList<SubtitleCue> retimed = SubtitleRetimingService.Retime(cues, stretchFactor);
 

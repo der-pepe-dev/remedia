@@ -91,7 +91,7 @@ public static class ContainerFormatDetector
         // Look for "webm" or "matroska" doctype in the header region.
         // A full EBML parse would be needed for certainty, but a quick
         // byte scan for the doctype string covers practical files.
-        for (int i = 4; i < buf.Length - 4; i++)
+        for (int i = 4; i <= buf.Length - 4; i++)
         {
             if (buf[i] == 'w' && buf[i + 1] == 'e' && buf[i + 2] == 'b' && buf[i + 3] == 'm')
             {

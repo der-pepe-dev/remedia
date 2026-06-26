@@ -63,4 +63,36 @@ internal static class CliArguments
 
         return values;
     }
+
+    /// <summary>True if the named flag appears in <paramref name="args"/> (value not required).</summary>
+    public static bool HasFlag(string[] args, string name)
+    {
+        return Array.Exists(args, a => string.Equals(a, name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// Reads all integer values for a repeated flag, but fails (returns false) if any
+    /// occurrence has a missing or non-integer value rather than silently dropping it.
+    /// </summary>
+    public static bool TryReadManyIntegers(string[] args, string name, out List<int> values)
+    {
+        values = [];
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (!string.Equals(args[i], name, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (i + 1 >= args.Length || !int.TryParse(args[i + 1], out int parsed))
+            {
+                return false;
+            }
+
+            values.Add(parsed);
+        }
+
+        return true;
+    }
 }

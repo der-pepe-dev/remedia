@@ -13,6 +13,18 @@ public static class SrtParser
 {
     public static IReadOnlyList<SubtitleCue> Parse(string content)
     {
+        return Parse(content, out _);
+    }
+
+    /// <summary>
+    /// Parses SubRip content, also reporting cues that were dropped because their timing
+    /// line could not be parsed. Per the domain rule "never hide timing-mismatch warnings".
+    /// </summary>
+    public static IReadOnlyList<SubtitleCue> Parse(string content, out IReadOnlyList<string> warnings)
+    {
+        List<string> warningList = [];
+        warnings = warningList;
+
         if (string.IsNullOrWhiteSpace(content))
         {
             return [];
@@ -55,6 +67,7 @@ public static class SrtParser
 
             if (!TryParseTimingLine(timingLine, out TimeSpan start, out TimeSpan end))
             {
+                warningList.Add($"Skipped cue with unparseable timing line: \"{timingLine}\"");
                 continue;
             }
 
@@ -78,8 +91,14 @@ public static class SrtParser
 
     public static IReadOnlyList<SubtitleCue> ParseFile(string filePath)
     {
+        return ParseFile(filePath, out _);
+    }
+
+    /// <summary>Parses a SubRip file, also reporting cues dropped due to bad timing lines.</summary>
+    public static IReadOnlyList<SubtitleCue> ParseFile(string filePath, out IReadOnlyList<string> warnings)
+    {
         string content = File.ReadAllText(filePath, Encoding.UTF8);
-        return Parse(content);
+        return Parse(content, out warnings);
     }
 
     private static bool TryParseTimingLine(string line, out TimeSpan start, out TimeSpan end)
@@ -112,7 +131,7 @@ public static class SrtParser
         if (!int.TryParse(parts[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int hours) ||
             !int.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int minutes) ||
             !int.TryParse(parts[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out int seconds) ||
-            !int.TryParse(parts[3], NumberStyles.Integer, CultureInfo.InvariantCulture, out int milliseconds))
+            !SubtitleTimeParsing.TryParseFractionalMs(parts[3], out int milliseconds))
         {
             return false;
         }

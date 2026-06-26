@@ -32,6 +32,21 @@ public sealed class ContainerFormatDetectorTests
     }
 
     [Fact]
+    public void Detect_WebMDoctypeAtHeaderTail_ReturnsWebM()
+    {
+        // "webm" occupies the last 4 bytes of the 32-byte header — the off-by-one
+        // boundary the scan previously missed (falling back to Matroska).
+        byte[] header = new byte[32];
+        header[0] = 0x1A; header[1] = 0x45; header[2] = 0xDF; header[3] = 0xA3;
+        header[28] = (byte)'w'; header[29] = (byte)'e'; header[30] = (byte)'b'; header[31] = (byte)'m';
+        using MemoryStream ms = new(header);
+
+        ContainerFormatInfo result = ContainerFormatDetector.Detect(ms);
+
+        Assert.Equal(ContainerFormat.WebM, result.Format);
+    }
+
+    [Fact]
     public void Detect_Mp4Header_ReturnsMp4()
     {
         // "ftyp" box at offset 4

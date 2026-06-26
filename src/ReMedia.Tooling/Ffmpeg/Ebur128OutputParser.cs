@@ -44,15 +44,15 @@ public static partial class Ebur128OutputParser
         return null;
     }
 
-    [GeneratedRegex(@"I:\s+(-?\d+\.?\d*)\s+LUFS", RegexOptions.Compiled)]
+    [GeneratedRegex(@"I:\s+(-?\d+(?:\.\d+)?)\s+LUFS", RegexOptions.Compiled)]
     private static partial Regex IntegratedPattern();
 
-    [GeneratedRegex(@"LRA:\s+(-?\d+\.?\d*)\s+LU", RegexOptions.Compiled)]
+    [GeneratedRegex(@"LRA:\s+(-?\d+(?:\.\d+)?)\s+LU", RegexOptions.Compiled)]
     private static partial Regex LraPattern();
 
-    [GeneratedRegex(@"True peak:.*?Peak:\s+(-?\d+\.?\d*)\s+dBTP", RegexOptions.Compiled | RegexOptions.Singleline)]
+    [GeneratedRegex(@"True peak:.*?Peak:\s+(-?\d+(?:\.\d+)?)\s+dBTP", RegexOptions.Compiled | RegexOptions.Singleline)]
     private static partial Regex TruePeakPattern();
 
-    [GeneratedRegex(@"Sample peak:.*?Peak:\s+(-?\d+\.?\d*)\s+dBFS", RegexOptions.Compiled | RegexOptions.Singleline)]
+    [GeneratedRegex(@"Sample peak:.*?Peak:\s+(-?\d+(?:\.\d+)?)\s+dBFS", RegexOptions.Compiled | RegexOptions.Singleline)]
     private static partial Regex SamplePeakPattern();
 }

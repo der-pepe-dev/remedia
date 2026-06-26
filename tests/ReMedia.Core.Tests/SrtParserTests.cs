@@ -121,4 +121,31 @@ public sealed class SrtParserTests
         Assert.Single(cues);
         Assert.Equal(TimeSpan.FromHours(25), cues[0].Start);
     }
+
+    [Theory]
+    [InlineData("00:00:01,5", 1, 500)]
+    [InlineData("00:00:01,50", 1, 500)]
+    [InlineData("00:00:01,500", 1, 500)]
+    [InlineData("00:00:01,05", 1, 50)]
+    public void Parse_FractionalSeconds_ScaledToMilliseconds(string startStamp, int expectSeconds, int expectMs)
+    {
+        string input = $"1\n{startStamp} --> 00:00:09,000\nHi\n";
+
+        IReadOnlyList<SubtitleCue> cues = SrtParser.Parse(input);
+
+        Assert.Single(cues);
+        Assert.Equal(new TimeSpan(0, 0, 0, expectSeconds, expectMs), cues[0].Start);
+    }
+
+    [Fact]
+    public void Parse_UnparseableTimingLine_ReportsWarningAndKeepsValidCue()
+    {
+        string input = "1\n00:00:0x,000 --> 00:00:02,000\nBad\n\n2\n00:00:03,000 --> 00:00:04,000\nGood\n";
+
+        IReadOnlyList<SubtitleCue> cues = SrtParser.Parse(input, out IReadOnlyList<string> warnings);
+
+        Assert.Single(cues);
+        Assert.Equal("Good", cues[0].Text);
+        Assert.NotEmpty(warnings);
+    }
 }

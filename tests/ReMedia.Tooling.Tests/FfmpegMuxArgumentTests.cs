@@ -107,6 +107,24 @@ public sealed class FfmpegMuxArgumentTests
     }
 
     [Fact]
+    public void BuildMuxArguments_TitleWithDoubleQuote_EscapesInnerQuote()
+    {
+        MuxRequest request = new(
+            OutputPath: @"C:\out\output.mkv",
+            DestinationMasterPath: null,
+            Assets:
+            [
+                new(@"C:\out\audio.flac", 0, 0, MediaAssetType.Audio, null, @"My ""Best"" Track", IsDefault: false, IsForced: false),
+            ],
+            ChaptersFilePath: null);
+
+        string args = FfmpegArgumentBuilder.BuildMuxArguments(request);
+
+        // Inner quotes are backslash-escaped so they can't terminate the argument early.
+        Assert.Contains(@"\""Best\""", args);
+    }
+
+    [Fact]
     public void BuildMuxArguments_WithNoAssets_ProducesMinimalCommand()
     {
         MuxRequest request = new(
