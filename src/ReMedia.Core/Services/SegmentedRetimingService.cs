@@ -104,17 +104,19 @@ public static class SegmentedRetimingService
 
         for (int i = 0; i < segments.Count; i++)
         {
-            if (segments[i].StretchFactor <= 0)
+            TimingSegment seg = segments[i];
+
+            if (seg.StretchFactor <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(segments), $"Segment {i} has invalid stretch factor.");
             }
 
-            if (segments[i].End.HasValue && segments[i].End.Value <= segments[i].Start)
+            if (seg.End.HasValue && seg.End.Value <= seg.Start)
             {
                 throw new ArgumentException($"Segment {i} end must be after start.", nameof(segments));
             }
 
-            if (i > 0 && segments[i].Start < segments[i - 1].Start)
+            if (i > 0 && seg.Start < segments[i - 1].Start)
             {
                 throw new ArgumentException("Segments must be ordered by start time.", nameof(segments));
             }

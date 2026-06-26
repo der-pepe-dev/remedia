@@ -4,6 +4,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <!-- CS1591: missing XML doc comment. Doc generation stays on (existing /// summaries
+         still emit XML); this only silences the missing-member noise for an app/CLI. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <Deterministic>true</Deterministic>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RepositoryUrl>https://github.com/der-pepe/remedia-sync</RepositoryUrl>

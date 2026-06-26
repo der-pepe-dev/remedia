@@ -24,7 +24,7 @@ public sealed class ExportWorkflowServiceTests
             ExportChapters: false,
             Chapters: []);
 
-        ExportWorkflowResult result = await service.ExecuteAsync(request);
+        ExportWorkflowResult result = await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, result.TrackResults.Count);
         Assert.True(result.TrackResults.All(r => r.Succeeded));
@@ -46,7 +46,7 @@ public sealed class ExportWorkflowServiceTests
             ExportChapters: true,
             Chapters: [new MediaChapterInfo(0, TimeSpan.Zero, TimeSpan.FromMinutes(5), "Ch1")]);
 
-        ExportWorkflowResult result = await service.ExecuteAsync(request);
+        ExportWorkflowResult result = await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         Assert.Empty(result.TrackResults);
         Assert.NotNull(result.ChapterResult);
@@ -72,7 +72,7 @@ public sealed class ExportWorkflowServiceTests
             ExportChapters: false,
             Chapters: []);
 
-        ExportWorkflowResult result = await service.ExecuteAsync(request);
+        ExportWorkflowResult result = await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         Assert.Single(result.TrackResults);
         Assert.Contains("stream 1", result.TrackResults[0].OperationName);
@@ -92,7 +92,7 @@ public sealed class ExportWorkflowServiceTests
             ExportChapters: false,
             Chapters: []);
 
-        ExportWorkflowResult result = await service.ExecuteAsync(request);
+        ExportWorkflowResult result = await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         Assert.True(result.HasFailures);
     }
@@ -111,7 +111,7 @@ public sealed class ExportWorkflowServiceTests
             ExportChapters: false,
             Chapters: [new MediaChapterInfo(0, TimeSpan.Zero, TimeSpan.FromMinutes(5), "Ch1")]);
 
-        ExportWorkflowResult result = await service.ExecuteAsync(request);
+        ExportWorkflowResult result = await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         Assert.Null(result.ChapterResult);
     }
@@ -130,7 +130,7 @@ public sealed class ExportWorkflowServiceTests
             ExportChapters: true,
             Chapters: []);
 
-        ExportWorkflowResult result = await service.ExecuteAsync(request);
+        ExportWorkflowResult result = await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         Assert.Null(result.ChapterResult);
     }
@@ -155,7 +155,7 @@ public sealed class ExportWorkflowServiceTests
             SourceFps: 25m,
             TargetFps: 24000m / 1001m);
 
-        await service.ExecuteAsync(request);
+        await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         Assert.Equal(2, trackExport.CapturedTracks.Count);
 
@@ -184,7 +184,7 @@ public sealed class ExportWorkflowServiceTests
             SourceFps: 25m,
             TargetFps: 24000m / 1001m);
 
-        await service.ExecuteAsync(request);
+        await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         TrackExportOptions audioTrack = trackExport.CapturedTracks.Single();
         Assert.False(audioTrack.ApplyTimingConversion);
@@ -207,7 +207,7 @@ public sealed class ExportWorkflowServiceTests
             SourceFps: 25m,
             TargetFps: 25m);
 
-        await service.ExecuteAsync(request);
+        await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         TrackExportOptions audioTrack = trackExport.CapturedTracks.Single();
         Assert.False(audioTrack.ApplyTimingConversion);
@@ -227,7 +227,7 @@ public sealed class ExportWorkflowServiceTests
             ExportChapters: false,
             Chapters: []);
 
-        await service.ExecuteAsync(request);
+        await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         TrackExportOptions audioTrack = trackExport.CapturedTracks.Single();
         Assert.False(audioTrack.ApplyTimingConversion);
@@ -255,7 +255,7 @@ public sealed class ExportWorkflowServiceTests
             SourceFps: 25m,
             TargetFps: 24000m / 1001m);
 
-        ExportWorkflowResult result = await service.ExecuteAsync(request);
+        ExportWorkflowResult result = await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         Assert.NotNull(result.ChapterResult);
         Assert.True(result.ChapterResult.Succeeded);
@@ -264,7 +264,7 @@ public sealed class ExportWorkflowServiceTests
         string chapterPath = Path.Combine(outputFolder, "chapters.txt");
         Assert.True(File.Exists(chapterPath));
 
-        string content = await File.ReadAllTextAsync(chapterPath);
+        string content = await File.ReadAllTextAsync(chapterPath, TestContext.Current.CancellationToken);
         Assert.StartsWith(";FFMETADATA1", content);
         Assert.Contains("[CHAPTER]", content);
         Assert.Contains("title=Chapter 1", content);
@@ -289,7 +289,7 @@ public sealed class ExportWorkflowServiceTests
             ExportChapters: true,
             Chapters: [new MediaChapterInfo(0, TimeSpan.Zero, TimeSpan.FromSeconds(60), "Ch1")]);
 
-        ExportWorkflowResult result = await service.ExecuteAsync(request);
+        ExportWorkflowResult result = await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         Assert.NotNull(result.ChapterResult);
         Assert.True(result.ChapterResult.Succeeded);
@@ -319,7 +319,7 @@ public sealed class ExportWorkflowServiceTests
             Chapters: [],
             MuxToMkv: true);
 
-        await service.ExecuteAsync(request);
+        await service.ExecuteAsync(request, TestContext.Current.CancellationToken);
 
         try
         {
