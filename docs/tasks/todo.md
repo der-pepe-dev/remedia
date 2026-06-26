@@ -4,11 +4,14 @@ Durable, prioritized task list. Active work goes in `tasks/<task-name>.md`, not 
 
 ## High priority
 
-- Loudness *matching*: wire an auto gain-to-target workflow on top of existing EBU R128
-  measurement + clipping prediction (currently measure-only). See [[phases]] "Later".
+<!-- TODO -->
 
 ## Medium priority
 
+- Loudness matching — auto-apply: the recommendation workflow exists
+  (`ILoudnessService.MatchToTarget`, CLI `loudness --target-lufs`). Follow-up: feed the
+  recommended gain into `ExportWorkflowService` so an export can target a LUFS per track
+  (export already supports `AppliedGainDb`).
 - WPF App test coverage: `ReMedia.App` ViewModels have no automated tests (e.g. the
   `MainWindowViewModel` clipping recalc with a half-populated `LoudnessAnalysisResult`).
 - CI: `.github/workflows/ci.yml` builds only on `windows-latest`; the solution now builds

@@ -44,6 +44,8 @@ internal static class CliPrinter
         Console.WriteLine("Loudness options:");
         Console.WriteLine("  --stream <index>       Analyze specific stream (default: all audio)");
         Console.WriteLine("  --gain <dB>            Predict clipping at this gain level");
+        Console.WriteLine("  --target-lufs <LUFS>   Recommend a gain to reach this integrated loudness");
+        Console.WriteLine("  --ceiling <dBTP>       True-peak ceiling for matching (default: -1.0)");
         Console.WriteLine();
         Console.WriteLine("Cleanup options:");
         Console.WriteLine("  --output <file>        Output path (default: <input>_clean.<ext>)");
@@ -171,6 +173,18 @@ internal static class CliPrinter
     {
         string label = result.Danger ? "DANGER" : result.Warning ? "WARNING" : "OK";
         Console.WriteLine($"    Clipping ({result.AppliedGainDb:+0.#;-0.#;0} dB): [{label}] {result.Message}");
+    }
+
+    public static void PrintLoudnessMatch(LoudnessMatchResult result)
+    {
+        string label = result.GainLimitedByCeiling ? "LIMITED" : result.RecommendedGainDb.HasValue ? "OK" : "N/A";
+        string gain = result.RecommendedGainDb.HasValue ? $"{result.RecommendedGainDb:+0.0;-0.0;0} dB" : "n/a";
+        Console.WriteLine($"    Match -> {result.TargetLufs:0.#} LUFS: [{label}] gain {gain}. {result.Message}");
+
+        if (result.Clipping is not null)
+        {
+            PrintClippingPrediction(result.Clipping);
+        }
     }
 
     private static void PrintOperationResult(ToolOperationResult result)

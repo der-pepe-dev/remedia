@@ -37,6 +37,10 @@ Implemented today (verified in source / CLI commands):
 ## Recent notes
 
 <!-- Append dated notes here, newest first: -->
+- 2026-06-27: Added loudness matching — `ILoudnessService.MatchToTarget` recommends a
+  gain to reach a target integrated LUFS, limited by a true-peak ceiling (default -1 dBTP)
+  and clipping-checked. Exposed via CLI `loudness --target-lufs <v> [--ceiling <dBTP>]`.
+  Auto-applying the recommended gain inside an export remains a follow-up.
 - 2026-06-27: Synced status/phases docs with actual code — Phase 0/1 and several "Later"
   features (loudness+clipping, mux, subtitle/chapter/segment retiming, subtitle cleanup,
   native format detection) are implemented. Docs previously listed these as not started.

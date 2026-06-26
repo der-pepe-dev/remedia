@@ -321,7 +321,14 @@ static async Task<int> HandleLoudnessAsync(
 
     string inputPath = args[1];
     List<int> requestedStreams = CliArguments.ReadManyIntegers(args, "--stream");
-    decimal? gainDb = CliArguments.ReadDecimal(args, "--gain");
+    if (!TryReadOptionalDecimal(args, "--gain", out decimal? gainDb) ||
+        !TryReadOptionalDecimal(args, "--target-lufs", out decimal? targetLufs) ||
+        !TryReadOptionalDecimal(args, "--ceiling", out decimal? ceilingDbtp))
+    {
+        return 1;
+    }
+
+    decimal ceiling = ceilingDbtp ?? -1.0m;
 
     Console.WriteLine($"Probing {inputPath}...");
     MediaProbeResult probeResult = await probeService.ProbeAsync(inputPath);
@@ -350,6 +357,12 @@ static async Task<int> HandleLoudnessAsync(
         {
             ClippingPredictionResult clipping = loudnessService.PredictClipping(loudness, gainDb.Value);
             CliPrinter.PrintClippingPrediction(clipping);
+        }
+
+        if (targetLufs.HasValue)
+        {
+            LoudnessMatchResult match = loudnessService.MatchToTarget(loudness, targetLufs.Value, ceiling);
+            CliPrinter.PrintLoudnessMatch(match);
         }
 
         Console.WriteLine();
