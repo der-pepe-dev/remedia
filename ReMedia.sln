@@ -1,0 +1,54 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11512.155 d18.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReMedia.Core", "src\ReMedia.Core\ReMedia.Core.csproj", "{418245B8-0488-4DB1-A2ED-14725F6AA50F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReMedia.Tooling", "src\ReMedia.Tooling\ReMedia.Tooling.csproj", "{BB64C42C-FACD-4486-8581-BAE15941454E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReMedia.Cli", "src\ReMedia.Cli\ReMedia.Cli.csproj", "{4D7D6B1B-9755-4298-B8A2-5B2D2A4D43B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReMedia.App", "src\ReMedia.App\ReMedia.App.csproj", "{306D8B28-BD3E-451B-B9EE-1F3C670F6B9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReMedia.Core.Tests", "tests\ReMedia.Core.Tests\ReMedia.Core.Tests.csproj", "{132BA4A1-AEB9-4794-B544-7BC5B5F618D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReMedia.Tooling.Tests", "tests\ReMedia.Tooling.Tests\ReMedia.Tooling.Tests.csproj", "{D60A089F-1A68-4214-8850-AB5794D0A7DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{418245B8-0488-4DB1-A2ED-14725F6AA50F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{418245B8-0488-4DB1-A2ED-14725F6AA50F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{418245B8-0488-4DB1-A2ED-14725F6AA50F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{418245B8-0488-4DB1-A2ED-14725F6AA50F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB64C42C-FACD-4486-8581-BAE15941454E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB64C42C-FACD-4486-8581-BAE15941454E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB64C42C-FACD-4486-8581-BAE15941454E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB64C42C-FACD-4486-8581-BAE15941454E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D7D6B1B-9755-4298-B8A2-5B2D2A4D43B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D7D6B1B-9755-4298-B8A2-5B2D2A4D43B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D7D6B1B-9755-4298-B8A2-5B2D2A4D43B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D7D6B1B-9755-4298-B8A2-5B2D2A4D43B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{306D8B28-BD3E-451B-B9EE-1F3C670F6B9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{306D8B28-BD3E-451B-B9EE-1F3C670F6B9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{306D8B28-BD3E-451B-B9EE-1F3C670F6B9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{306D8B28-BD3E-451B-B9EE-1F3C670F6B9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132BA4A1-AEB9-4794-B544-7BC5B5F618D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132BA4A1-AEB9-4794-B544-7BC5B5F618D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132BA4A1-AEB9-4794-B544-7BC5B5F618D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132BA4A1-AEB9-4794-B544-7BC5B5F618D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D60A089F-1A68-4214-8850-AB5794D0A7DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D60A089F-1A68-4214-8850-AB5794D0A7DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D60A089F-1A68-4214-8850-AB5794D0A7DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D60A089F-1A68-4214-8850-AB5794D0A7DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B1795D51-9242-452C-8E22-08796B216FF8}
+	EndGlobalSection
+EndGlobal
