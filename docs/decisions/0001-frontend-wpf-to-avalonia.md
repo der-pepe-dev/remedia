@@ -22,6 +22,12 @@ to the App layer.
 - Keep all real logic in `ReMedia.Core` / `ReMedia.Tooling` so it is reused unchanged by
   the new frontend (e.g. loudness matching via `ILoudnessService`, already wired in CLI).
 
+## Progress
+
+- 2026-06-27: Increment 1 landed — `ReMedia.App.Avalonia` (net10.0, cross-platform) with a
+  runnable shell (input → Probe → tracks DataGrid + log), reusing Core/Tooling and the
+  portable command/base classes. Builds + launches on Linux/WSLg. See [[avalonia-migration]].
+
 ## Consequences
 
 - Backlog items scoped to the WPF App (App loudness surface, WPF ViewModel tests) are

@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ReMedia.App.Avalonia.ViewModels"
+        x:Class="ReMedia.App.Avalonia.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Width="900" Height="640"
+        Title="ReMedia (Avalonia)">
+
+  <Grid RowDefinitions="Auto,*,Auto,180" Margin="12">
+
+    <!-- Input row -->
+    <Border Grid.Row="0" BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,10">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+        <TextBlock Grid.Column="0" Text="Input:" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <TextBox Grid.Column="1" Text="{Binding InputPath}" Watermark="Path to a media file" Margin="0,0,8,0" />
+        <Button Grid.Column="2" Content="Browse…" Command="{Binding BrowseInputCommand}" Margin="0,0,8,0" />
+        <Button Grid.Column="3" Content="Probe" Command="{Binding ProbeCommand}" />
+      </Grid>
+    </Border>
+
+    <!-- Tracks -->
+    <Border Grid.Row="1" BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="4" Margin="0,0,0,10">
+      <DataGrid ItemsSource="{Binding Tracks}"
+                IsReadOnly="True"
+                AutoGenerateColumns="False"
+                GridLinesVisibility="Horizontal">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="#" Binding="{Binding StreamIndex}" Width="50" />
+          <DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="100" />
+          <DataGridTextColumn Header="Codec" Binding="{Binding Codec}" Width="120" />
+          <DataGridTextColumn Header="Lang" Binding="{Binding Language}" Width="70" />
+          <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*" />
+          <DataGridTextColumn Header="Ch" Binding="{Binding Channels}" Width="60" />
+          <DataGridTextColumn Header="Sample rate" Binding="{Binding SampleRate}" Width="120" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </Border>
+
+    <TextBlock Grid.Row="2" Text="Log" FontWeight="SemiBold" Margin="0,0,0,6" />
+
+    <!-- Log -->
+    <Border Grid.Row="3" BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="4">
+      <TextBox Text="{Binding Log}"
+               IsReadOnly="True"
+               AcceptsReturn="True"
+               TextWrapping="Wrap"
+               FontFamily="Cascadia Code, Consolas, monospace"
+               VerticalContentAlignment="Top" />
+    </Border>
+  </Grid>
+</Window>

@@ -37,6 +37,10 @@ Implemented today (verified in source / CLI commands):
 ## Recent notes
 
 <!-- Append dated notes here, newest first: -->
+- 2026-06-27: Started the WPF -> Avalonia migration ([[avalonia-migration]],
+  [[decisions/0001-frontend-wpf-to-avalonia]]). New cross-platform `ReMedia.App.Avalonia`
+  (net10.0) with a runnable shell: input picker -> Probe -> tracks DataGrid + log. Builds
+  and launches on Linux/WSLg. WPF App kept until parity. Export/loudness/timing come next.
 - 2026-06-27: Loudness matching now auto-applies on export — `export --target-lufs <v>
   [--ceiling <dBTP>]` measures each audio track, computes the ceiling-limited gain, and
   re-encodes (copy falls back to flac) to hit the target. Remaining: WPF App surface and
