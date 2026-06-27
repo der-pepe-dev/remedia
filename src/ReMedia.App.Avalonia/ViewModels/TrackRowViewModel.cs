@@ -2,31 +2,39 @@ namespace ReMedia.App.Avalonia.ViewModels;
 
 using ReMedia.Core.Models;
 
-/// <summary>Read-only display row for one media stream in the tracks DataGrid.</summary>
-public sealed class TrackRowViewModel
+/// <summary>Display row for one media stream in the tracks DataGrid, with an export toggle.</summary>
+public sealed class TrackRowViewModel : ViewModelBase
 {
+    private bool _selected;
+
     public TrackRowViewModel(MediaStreamInfo stream)
     {
-        StreamIndex = stream.Index;
-        Kind = stream.AssetType.ToString();
-        Codec = stream.CodecName ?? "?";
-        Language = stream.Language ?? "und";
-        Title = stream.Title ?? string.Empty;
-        Channels = stream.Channels?.ToString() ?? string.Empty;
-        SampleRate = stream.SampleRate is int sr ? $"{sr} Hz" : string.Empty;
+        Stream = stream;
+        // Default to exporting audio/subtitle tracks; video is not exported in this app.
+        _selected = stream.AssetType is not MediaAssetType.Video;
     }
 
-    public int StreamIndex { get; }
+    public MediaStreamInfo Stream { get; }
 
-    public string Kind { get; }
+    public int StreamIndex => Stream.Index;
 
-    public string Codec { get; }
+    public string Kind => Stream.AssetType.ToString();
 
-    public string Language { get; }
+    public string Codec => Stream.CodecName ?? "?";
 
-    public string Title { get; }
+    public string Language => Stream.Language ?? "und";
 
-    public string Channels { get; }
+    public string Title => Stream.Title ?? string.Empty;
 
-    public string SampleRate { get; }
+    public string Channels => Stream.Channels?.ToString() ?? string.Empty;
+
+    public string SampleRate => Stream.SampleRate is int sr ? $"{sr} Hz" : string.Empty;
+
+    public bool IsExportable => Stream.AssetType is not MediaAssetType.Video;
+
+    public bool Selected
+    {
+        get => _selected;
+        set => SetProperty(ref _selected, value);
+    }
 }
