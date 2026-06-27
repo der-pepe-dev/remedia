@@ -8,4 +8,14 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Avalonia" Version="11.2.1" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.2.1" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.2.1" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.2.1" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.2.1" />
+    <!-- Pin a patched version over Avalonia's transitive 0.20.0 (advisory GHSA-xrw6-gwf8-vvr9). -->
+    <PackageVersion Include="Tmds.DBus.Protocol" Version="0.21.3" />
+  </ItemGroup>
 </Project>
