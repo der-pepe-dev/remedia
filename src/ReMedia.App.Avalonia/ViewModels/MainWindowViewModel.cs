@@ -207,6 +207,11 @@ public sealed class MainWindowViewModel : ViewModelBase
             Status = result.HasFailures ? "Export completed with errors." : "Export completed.";
             AppendLog(Status);
         }
+        catch (OperationCanceledException)
+        {
+            AppendLog("Export canceled.");
+            Status = "Export canceled.";
+        }
         catch (Exception ex)
         {
             AppendLog($"Export failed: {ex.Message}");
