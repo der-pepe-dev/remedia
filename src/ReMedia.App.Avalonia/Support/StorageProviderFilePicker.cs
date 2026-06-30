@@ -35,4 +35,16 @@ public sealed class StorageProviderFilePicker : IFilePicker
 
         return files.Count > 0 ? files[0].Path.LocalPath : null;
     }
+
+    public async Task<string?> PickFolderAsync()
+    {
+        IReadOnlyList<IStorageFolder> folders = await _topLevel.StorageProvider.OpenFolderPickerAsync(
+            new FolderPickerOpenOptions
+            {
+                Title = "Select output folder",
+                AllowMultiple = false,
+            });
+
+        return folders.Count > 0 ? folders[0].Path.LocalPath : null;
+    }
 }

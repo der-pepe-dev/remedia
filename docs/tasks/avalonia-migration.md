@@ -12,8 +12,17 @@ Per [[0001-frontend-wpf-to-avalonia]]. Incremental; WPF App stays until parity, 
 - [x] Verified: solution builds 0 warnings; app launches on WSLg (no crash); VM tests green.
 - Note: end-to-end Probe needs ffprobe (not on this host) — covered by VM test with a fake.
 
+## Increment 2 — export workflow (DONE 2026-06-27)
+- [x] Selectable tracks (Export checkbox column); video excluded.
+- [x] Output folder + folder picker (`IFilePicker.PickFolderAsync`), Mux-to-MKV toggle.
+- [x] Export command builds `ExportWorkflowRequest` (copy streams, default containers) and
+      runs `ExportWorkflowService.ExecuteAsync` with an `IProgress<WorkflowProgress>` bound
+      to a progress bar + status; per-track + mux results logged. Workflow step messages
+      routed to the log pane via `CallbackToolLogger`.
+- [x] VM export tests (fake track/chapter export services); app runs on WSLg with the new UI.
+- Note: real transcode still needs ffmpeg (not on this host); covered by fake-service tests.
+
 ## Next increments
-- [ ] Export workflow (track selection, codec/container, output folder, mux, progress).
 - [ ] Loudness (measure + `--target-lufs`-style match), timing analysis, audio sync.
 - [ ] Multi-part sources; drag-drop input.
 - [ ] Reach parity, then remove `ReMedia.App` (WPF) from the solution + CI (separate PR).
