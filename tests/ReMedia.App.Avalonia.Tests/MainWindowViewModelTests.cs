@@ -60,7 +60,7 @@ public sealed class MainWindowViewModelTests
             new FakeProbeService([Stream(0, MediaAssetType.Video, "h264"), Stream(1, MediaAssetType.Audio, "ac3")]),
             track);
 
-        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Join(Path.GetTempPath(), Guid.NewGuid().ToString());
         vm.InputPath = @"C:\in\movie.mkv";
         vm.OutputFolder = outputFolder;
 
